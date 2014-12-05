@@ -12,7 +12,6 @@ function compile(str, path) {
   return stylus(str).set('filename', path);
 }
 
-
   app.set('views', __dirname + '/server/views');
   app.set('view engine', 'jade');
   app.use(logger('dev'));
@@ -25,8 +24,11 @@ function compile(str, path) {
   ));
   app.use(express.static(__dirname + '/public'));
 
-
-mongoose.connect('mongodb://localhost/multivision');
+if(env === 'development') {
+  mongoose.connect('mongodb://localhost/multivision');
+} else {
+  mongoose.connect('mongodb://dharris:multivision@ds061200.mongolab.com:61200/multivisiondemo');
+}
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error...'));
 db.once('open', function callback() {
@@ -50,6 +52,6 @@ app.get('*', function(req, res) {
   } );
 });
 
-var port = 3030;
+var port = process.env.PORT || 3030;
 app.listen(port);
 console.log('Listening on port ' + port + '...');
